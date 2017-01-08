@@ -1,6 +1,10 @@
 ﻿Imports System.Threading
 
 Public Class Form1
+
+    'Retorna un string amb el nom del mes en
+    'catala en funcio del numero de mes que
+    'se li pasa com a parametre
     Private Function GetCatalanMonth(num As Integer)
         Select Case num
             Case 1
@@ -30,6 +34,10 @@ Public Class Form1
         End Select
         Return "Undecember"
     End Function
+
+    'Carrega tot el contingut necessari
+    'quan el programa es carrega per
+    'primera vegada
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
         SetLocalClock()
@@ -42,17 +50,30 @@ Public Class Form1
 
     End Sub
 
+    'Estableix la data local representada
+    'en catala mitjançant la funcio
+    'anterior que retorna el mes,
+    'tambe representa numericament el dia
+    'i lany.
     Private Sub SetLocalDate()
         Dim dDate As DateTime = Now()
         SetTextToLabel(CurrentDate, dDate.ToString("dd") + " de " + GetCatalanMonth(Integer.Parse(dDate.ToString("MM"))) + " del " + dDate.ToString("yyyy"))
     End Sub
 
+    'Estableix lhora local del rellotge
+    'mitjançant lhora actual que te
+    'el sistema en el que s'executa
     Private Sub SetLocalClock()
         SetTextToLabel(ClockSeconds, TimeOfDay.ToString("ss"))
         SetTextToLabel(ClockMinutes, TimeOfDay.ToString("mm"))
         SetTextToLabel(ClockHours, TimeOfDay.ToString("HH"))
     End Sub
 
+    'Fil que controla el rellotge
+    'i tambe lalarma mitjançant les
+    'funcions de control de rellotge
+    'i destabliment de dades en els
+    'labels corresponents
     Private Sub ThreadClock()
         While True
             Dim countryCode As String = GetTextFromComboBox(CountryComboBox)
@@ -88,7 +109,16 @@ Public Class Form1
         End While
     End Sub
 
+    'Funcio abstracta que sutilitza
+    'per fer recursivitat per
+    'obtenir un valor desde un
+    'NumericUpDown
     Private Delegate Function GetTextFromNumericUpDownDelegate(ByVal NumericUpDown As NumericUpDown)
+
+    'Funcio que sutilitza
+    'per fer recursivitat per
+    'obtenir un valor desde un
+    'NumericUpDown
     Private Function GetTextFromNumericUpDown(ByVal NumericUpDown As NumericUpDown)
         If NumericUpDown.InvokeRequired Then
             Return NumericUpDown.Invoke(New GetTextFromNumericUpDownDelegate(AddressOf GetTextFromNumericUpDown), New Object() {NumericUpDown})
@@ -96,7 +126,16 @@ Public Class Form1
         Return NumericUpDown.Value
     End Function
 
+    'Funcio abstracta que sutilitza
+    'per fer recursivitat per
+    'establir un valor per a un
+    'TextBox
     Private Delegate Sub SetTextToTextBoxDelegate(ByVal TextBox As TextBox, ByVal txt As String)
+
+    'Funcio que sutilitza
+    'per fer recursivitat per
+    'establir un valor per a un
+    'TextBox
     Private Sub SetTextToTextBox(ByVal TextBox As TextBox, ByVal Txt As String)
         If TextBox.InvokeRequired Then
             TextBox.Invoke(New SetTextToTextBoxDelegate(AddressOf SetTextToTextBox), New Object() {TextBox, Txt})
@@ -105,7 +144,16 @@ Public Class Form1
         End If
     End Sub
 
+    'Funcio abstracta que sutilitza
+    'per fer recursivitat per
+    'obtenir un valor desde un
+    'ComboBox
     Private Delegate Function GetTextFromComboBoxDelegate(ByVal ComboBox As ComboBox)
+
+    'Funcio que sutilitza
+    'per fer recursivitat per
+    'obtenir un valor desde un
+    'ComboBox
     Private Function GetTextFromComboBox(ByVal ComboBox As ComboBox)
         If ComboBox.InvokeRequired Then
             Return ComboBox.Invoke(New GetTextFromComboBoxDelegate(AddressOf GetTextFromComboBox), New Object() {ComboBox})
@@ -113,7 +161,16 @@ Public Class Form1
         Return ComboBox.SelectedItem.ToString()
     End Function
 
+    'Funcio abstracta que sutilitza
+    'per fer recursivitat per
+    'establir un valor per a un
+    'Label
     Private Delegate Sub SetTextToLabelDelegate(ByVal Label As Label, ByVal txt As String)
+
+    'Funcio que sutilitza
+    'per fer recursivitat per
+    'establir un valor per a un
+    'Label
     Private Sub SetTextToLabel(ByVal Label As Label, ByVal Txt As String)
         If Label.InvokeRequired Then
             Label.Invoke(New SetTextToLabelDelegate(AddressOf SetTextToLabel), New Object() {Label, Txt})
@@ -122,10 +179,25 @@ Public Class Form1
         End If
     End Sub
 
+    'Event que es dispara quan
+    'es prem el botó per detenir
+    'lalarma, aquesta la detindra
+    'mitjançant una representacio
+    'visual mitjançant text
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles StopAlarmButton.Click
         SetTextToTextBox(StopAlarmTextBox, "Alarma parada")
     End Sub
 
+    'Event que es dispara quan
+    'es canvia dopcio en el
+    'combobox que representa
+    'el rellotge internacional
+    'si detecta cap, sestablira
+    'una hora 00 00 00,
+    'en cas de detectar correctament
+    'el pais, restara o sumara al
+    'rellotge actual i fara la
+    'representacio
     Private Sub CountryComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CountryComboBox.SelectedIndexChanged
         Dim countryCode As String = CountryComboBox.SelectedItem.ToString()
 
@@ -138,6 +210,9 @@ Public Class Form1
         SetInternationalClock()
     End Sub
 
+    'Estableix en funcio de la
+    'seleccio de pais, el rellotge
+    'internacional de forma correcta
     Private Sub SetInternationalClock()
         Dim countryCode As String = GetTextFromComboBox(CountryComboBox)
         SetTextToLabel(ClockCountrySeconds, TimeOfDay.ToString("ss"))
